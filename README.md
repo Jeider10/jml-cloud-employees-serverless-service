@@ -1,0 +1,3 @@
+# jml-cloud-employees-serverless-service
+
+Spring boot: mvn spring-boot:run
