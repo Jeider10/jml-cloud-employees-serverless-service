@@ -86,7 +86,7 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadosApellidos);
     }
 
-    @PutMapping("/actualizar")
+    @PutMapping("/update")
     public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
         log.info("📥 [SOLICITUD] Actualizar empleado con identificación: {}", empleadoRequestDTO.getIdentificacion());
 
@@ -97,7 +97,7 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadoResponseDTO);
     }
 
-    @DeleteMapping("/eliminar-identificacion")
+    @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarEmpleado(@RequestParam("identificacion") Long identificacion) {
         log.info("📥 [SOLICITUD] Eliminar empleado con identificación: {}", identificacion);
 
