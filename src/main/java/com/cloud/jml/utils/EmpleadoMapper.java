@@ -12,47 +12,71 @@ import java.time.LocalDateTime;
 @Component // 🔹 Anotación para indicar que es un componente de Spring
 public class EmpleadoMapper {
 
-    private final EmpleadoUtils empleadoUtils;
+    private final EmpleadoFormatearFecha empleadoFormatearFecha;
 
-    public EmpleadoMapper(EmpleadoUtils empleadoUtils) {
-        this.empleadoUtils = empleadoUtils;
+    public EmpleadoMapper(EmpleadoFormatearFecha empleadoFormatearFecha) {
+        this.empleadoFormatearFecha = empleadoFormatearFecha;
+        log.info("🔥 EmpleadoMapper inicializado correctamente.");
     }
 
-    // ------------------ 🔹 Métodos de Mapeos ------------------
-
+    /**
+     * 📦 Convierte un DTO de solicitud de empleado en una entidad lista para persistir.
+     */
     public EmpleadoEntity mapRequestDtoToEntity(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("📌 Iniciando mapeo DTO a Entity para crear Empleado");
+        log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para empleado");
 
-        EmpleadoEntity proveedorEntity = new EmpleadoEntity();
+        EmpleadoEntity empleadoEntity = new EmpleadoEntity();
 
-        proveedorEntity.setIdentificacion(empleadoRequestDTO.getIdentificacion());
-        proveedorEntity.setNombres(empleadoRequestDTO.getNombres());
-        proveedorEntity.setApellidos(empleadoRequestDTO.getApellidos());
-        proveedorEntity.setTelefono(empleadoRequestDTO.getTelefono());
-        proveedorEntity.setDireccion(empleadoRequestDTO.getDireccion());
-        proveedorEntity.setFechaCreacion(LocalDateTime.now());
+        empleadoEntity.setIdentificacion(empleadoRequestDTO.getIdentificacion());
+        empleadoEntity.setNombres(empleadoRequestDTO.getNombres());
+        empleadoEntity.setApellidos(empleadoRequestDTO.getApellidos());
+        empleadoEntity.setTelefono(empleadoRequestDTO.getTelefono());
+        empleadoEntity.setDireccion(empleadoRequestDTO.getDireccion());
+        empleadoEntity.setFechaCreacion(LocalDateTime.now());
 
-        log.info("📌 Finalizando mapeo DTO a Entity para crear Empleado");
+        log.info("✅ [MAPEO] Mapeo completado DTO → Entity para empleado");
 
-        return proveedorEntity;
+        return empleadoEntity;
     }
 
-    public EmpleadoResponseDTO mapEntityToResponseDto(EmpleadoEntity proveedorEntity) {
-        log.info("📌 Iniciando mapeo Entity a DTO para crear Empleado");
+    /**
+     * 📦 Convierte una entidad de empleado en un DTO de respuesta.
+     */
+    public EmpleadoResponseDTO mapEntityToResponseDto(EmpleadoEntity empleadoEntity) {
+        log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empleado");
 
-        EmpleadoResponseDTO proveedorResponseDTO = new EmpleadoResponseDTO();
+        EmpleadoResponseDTO empleadoResponseDTO = new EmpleadoResponseDTO();
 
-        proveedorResponseDTO.setIdentificacion(proveedorEntity.getIdentificacion());
-        proveedorResponseDTO.setNombres(proveedorEntity.getNombres());
-        proveedorResponseDTO.setApellidos(proveedorEntity.getApellidos());
-        proveedorResponseDTO.setTelefono(proveedorEntity.getTelefono());
-        proveedorResponseDTO.setDireccion(proveedorEntity.getDireccion());
+        empleadoResponseDTO.setIdentificacion(empleadoEntity.getIdentificacion());
+        empleadoResponseDTO.setNombres(empleadoEntity.getNombres());
+        empleadoResponseDTO.setApellidos(empleadoEntity.getApellidos());
+        empleadoResponseDTO.setTelefono(empleadoEntity.getTelefono());
+        empleadoResponseDTO.setDireccion(empleadoEntity.getDireccion());
 
-        // 🔹 Formatear fechas
-        empleadoUtils.asignarFechasFormateadas(proveedorEntity, proveedorResponseDTO);
+        // 🕓 Formateo de fechas
+        empleadoFormatearFecha.asignarFechasFormateadas(empleadoEntity, empleadoResponseDTO);
 
-        log.info("📌 Finalizando mapeo Entity a DTO para crear Empleado");
+        log.info("✅ [MAPEO] Mapeo completado Entity → DTO para empleado");
 
-        return proveedorResponseDTO;
+        return empleadoResponseDTO;
+    }
+
+    /**
+     * ✏️ Actualiza una entidad de empleado existente con los datos del DTO.
+     */
+    public void actualizarDatosEmpleadoExistente(EmpleadoRequestDTO empleadoRequestDTO, EmpleadoEntity empleadoEntity) {
+        log.info("✏️ [SOLICITUD] Actualizando datos del empleado con identificación: {}", empleadoEntity.getIdentificacion());
+
+        // Actualizamos solo los campos permitidos
+        empleadoEntity.setIdentificacion(empleadoRequestDTO.getIdentificacion());
+        empleadoEntity.setNombres(empleadoRequestDTO.getNombres());
+        empleadoEntity.setApellidos(empleadoRequestDTO.getApellidos());
+        empleadoEntity.setTelefono(empleadoRequestDTO.getTelefono());
+        empleadoEntity.setDireccion(empleadoRequestDTO.getDireccion());
+
+        // Actualizamos la fecha de actualización
+        empleadoEntity.setFechaActualizacion(LocalDateTime.now());
+
+        log.info("✅ [FINALIZADO] Empleado actualizado correctamente: identificación={}", empleadoEntity.getIdentificacion());
     }
 }

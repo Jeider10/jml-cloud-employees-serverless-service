@@ -2,15 +2,12 @@ package com.cloud.jml.controller;
 
 import com.cloud.jml.dto.EmpleadoRequestDTO;
 import com.cloud.jml.dto.EmpleadoResponseDTO;
-import com.cloud.jml.exception.EmpleadoNoEncontradoException;
 import com.cloud.jml.service.EmpleadoService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -22,129 +19,95 @@ public class EmpleadoController {
 
     public EmpleadoController(EmpleadoService empleadoService) {
         this.empleadoService = empleadoService;
+        log.info("🔥 EmpleadoController inicializado correctamente.");
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("📌 Iniciando petición para crear Empleado: {}", empleadoRequestDTO.getNombres());
-
-        EmpleadoResponseDTO response = empleadoService.crearEmpleado(empleadoRequestDTO);
-
-        log.info("📌 Finaliza petición para crear Empleado: {}", empleadoRequestDTO.getNombres());
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/listar-todos")
+    @GetMapping("/list/all")
     public ResponseEntity<List<EmpleadoResponseDTO>> listarEmpleados() {
-        log.info("📌 Iniciando petición para listar todos los Empleados");
+        log.info("📥 [SOLICITUD] Listar todos los empleados");
 
         List<EmpleadoResponseDTO> empleados = empleadoService.listarEmpleados();
 
-        log.info("📌 Finaliza petición para listar todos los Empleados");
+        log.info("📤 [RESPUESTA] Se retornan {} empleados", empleados.size());
 
         return ResponseEntity.ok(empleados);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
+        log.info("📥 [SOLICITUD] Crear empleado: {}", empleadoRequestDTO.getNombres());
+
+        EmpleadoResponseDTO response = empleadoService.crearEmpleado(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Empleado creado: {} con identificación: {}", response.getNombres(), response.getIdentificacion());
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/identificacion")
     public ResponseEntity<EmpleadoResponseDTO> obtenerEmpleadoPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
-        log.info("📌 Iniciando petición para buscar Empleado por identificacion: {}", identificacion);
-
-        Optional<EmpleadoResponseDTO> response = empleadoService.obtenerEmpleadoPorIdentificacion(identificacion);
-
-        ResponseEntity<EmpleadoResponseDTO> empleadoResponse;
-
-        if (response.isPresent()) {
-            empleadoResponse = ResponseEntity.ok(response.get());
-            log.info("✅ Empleado encontrado con identificacion: {}", identificacion);
-        } else {
-            empleadoResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            log.warn("❌ Empleado no encontrado con identificacion: {}", identificacion);
-        }
-
-        log.info("📌 Finaliza petición de buscar Empleado por identificacion: {}", identificacion);
-
-        return empleadoResponse;
-    }
-
-    @GetMapping("/nombres")
-    public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorNombres(@RequestParam("nombres") String nombres) {
-        log.info("📌 Iniciando petición para buscar Empleado por nombres: {}", nombres);
-
-        EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
-        empleadoRequestDTO.setNombres(nombres);
-
-        List<EmpleadoResponseDTO> response = empleadoService.obtenerEmpleadoPorNombres(empleadoRequestDTO);
-
-        ResponseEntity<List<EmpleadoResponseDTO>> empleadoResponse;
-
-        if (response.isEmpty()) {
-            empleadoResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            log.warn("❌ No se encontraron Empleado con nombre: {}", nombres);
-        } else {
-            empleadoResponse = ResponseEntity.ok(response);
-            log.info("✅ Empleado encontrados con nombre: {}", nombres);
-        }
-
-        log.info("📌 Finaliza petición de buscar Empleado por nombres: {}", nombres);
-
-        return empleadoResponse;
-    }
-
-    @GetMapping("/apellidos")
-    public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorApellidos(@RequestParam("apellidos") String apellidos) {
-        log.info("📌 Iniciando petición para buscar Empleado por apellidos: {}", apellidos);
-
-        EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
-        empleadoRequestDTO.setApellidos(apellidos);
-
-        List<EmpleadoResponseDTO> response = empleadoService.obtenerEmpleadoPorApellidos(empleadoRequestDTO);
-
-        ResponseEntity<List<EmpleadoResponseDTO>> empleadoResponse;
-
-        if (response.isEmpty()) {
-            empleadoResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            log.warn("❌ No se encontraron Empleado con apellidos: {}", apellidos);
-        } else {
-            empleadoResponse = ResponseEntity.ok(response);
-            log.info("✅ Empleado encontrados con apellidos: {}", apellidos);
-        }
-
-        log.info("📌 Finaliza petición de buscar Empleado por apellidos: {}", apellidos);
-
-        return empleadoResponse;
-    }
-
-    @PutMapping("/actualizar")
-    public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("📌 Iniciando petición para actualizar Empleado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
-
-        EmpleadoResponseDTO response;
-
-        try {
-            response = empleadoService.actualizarEmpleado(empleadoRequestDTO);
-            log.info("📌 Finaliza petición de actualización de Empleado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
-            return ResponseEntity.ok(response);
-        } catch (EmpleadoNoEncontradoException ex) {
-            log.warn("❌ No se pudo actualizar el Empleado. Identificacion no encontrado: {}", empleadoRequestDTO.getIdentificacion());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @DeleteMapping("/eliminar-identificacion")
-    public ResponseEntity<Void> eliminarEmpleado(@RequestParam("identificacion") Long identificacion) {
-        log.info("📌 Iniciando petición para eliminar Empleado con identificacion: {}", identificacion);
+        log.info("🔍 [SOLICITUD] Buscar empleado por identificación: {}", identificacion);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setIdentificacion(identificacion);
 
-        try {
-            empleadoService.eliminarEmpleado(empleadoRequestDTO);
-            log.info("📌 Finalizó petición de eliminación de Empleado con identificacion: {}", identificacion);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            log.warn("⚠️ Error al eliminar Empleado: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        EmpleadoResponseDTO empleadoIdentificacion = empleadoService.obtenerEmpleadoPorIdentificacion(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Empleado encontrado con identificación: {}", empleadoIdentificacion.getIdentificacion());
+
+        return ResponseEntity.ok(empleadoIdentificacion);
+    }
+
+    @GetMapping("/nombres")
+    public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorNombres(@RequestParam("nombres") String nombres) {
+        log.info("🔍 [SOLICITUD] Buscar empleado por nombre: {}", nombres);
+
+        EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
+        empleadoRequestDTO.setNombres(nombres);
+
+        List<EmpleadoResponseDTO> empleadosNombres = empleadoService.obtenerEmpleadoPorNombres(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Se retornan {} empleados con nombre: {}", empleadosNombres.size(), empleadoRequestDTO.getNombres());
+
+        return ResponseEntity.ok(empleadosNombres);
+    }
+
+    @GetMapping("/apellidos")
+    public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorApellidos(@RequestParam("apellidos") String apellidos) {
+        log.info("🔍 [SOLICITUD] Buscar empleado por apellido: {}", apellidos);
+
+        EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
+        empleadoRequestDTO.setApellidos(apellidos);
+
+        List<EmpleadoResponseDTO> empleadosApellidos = empleadoService.obtenerEmpleadoPorApellidos(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Se retornan {} empleados con apellido: {}", empleadosApellidos.size(), empleadoRequestDTO.getApellidos());
+
+        return ResponseEntity.ok(empleadosApellidos);
+    }
+
+    @PutMapping("/actualizar")
+    public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
+        log.info("📥 [SOLICITUD] Actualizar empleado con identificación: {}", empleadoRequestDTO.getIdentificacion());
+
+        EmpleadoResponseDTO empleadoResponseDTO = empleadoService.actualizarEmpleado(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Empleado actualizado correctamente: {} con identificación: {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
+
+        return ResponseEntity.ok(empleadoResponseDTO);
+    }
+
+    @DeleteMapping("/eliminar-identificacion")
+    public ResponseEntity<Void> eliminarEmpleado(@RequestParam("identificacion") Long identificacion) {
+        log.info("📥 [SOLICITUD] Eliminar empleado con identificación: {}", identificacion);
+
+        EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
+        empleadoRequestDTO.setIdentificacion(identificacion);
+
+        empleadoService.eliminarEmpleado(empleadoRequestDTO);
+
+        log.info("📤 [RESPUESTA] Empleado eliminado correctamente con identificación: {}", identificacion);
+
+        return ResponseEntity.ok().build();
     }
 }
