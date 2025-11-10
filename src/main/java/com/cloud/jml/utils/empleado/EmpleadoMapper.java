@@ -1,4 +1,4 @@
-package com.cloud.jml.utils;
+package com.cloud.jml.utils.empleado;
 
 import com.cloud.jml.dto.EmpleadoRequestDTO;
 import com.cloud.jml.dto.EmpleadoResponseDTO;
@@ -19,9 +19,6 @@ public class EmpleadoMapper {
         log.info("🔥 EmpleadoMapper inicializado correctamente.");
     }
 
-    /**
-     * 📦 Convierte un DTO de solicitud de empleado en una entidad lista para persistir.
-     */
     public EmpleadoEntity mapRequestDtoToEntity(EmpleadoRequestDTO empleadoRequestDTO) {
         log.info("📦 [MAPEO] Iniciando mapeo DTO → Entity para empleado");
 
@@ -39,9 +36,6 @@ public class EmpleadoMapper {
         return empleadoEntity;
     }
 
-    /**
-     * 📦 Convierte una entidad de empleado en un DTO de respuesta.
-     */
     public EmpleadoResponseDTO mapEntityToResponseDto(EmpleadoEntity empleadoEntity) {
         log.info("📦 [MAPEO] Iniciando mapeo Entity → DTO para empleado");
 
@@ -61,9 +55,6 @@ public class EmpleadoMapper {
         return empleadoResponseDTO;
     }
 
-    /**
-     * ✏️ Actualiza una entidad de empleado existente con los datos del DTO.
-     */
     public void actualizarDatosEmpleadoExistente(EmpleadoRequestDTO empleadoRequestDTO, EmpleadoEntity empleadoEntity) {
         log.info("✏️ [SOLICITUD] Actualizando datos del empleado con identificación: {}", empleadoEntity.getIdentificacion());
 

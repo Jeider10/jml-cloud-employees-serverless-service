@@ -1,4 +1,4 @@
-package com.cloud.jml.utils;
+package com.cloud.jml.utils.empleado;
 
 import com.cloud.jml.dto.EmpleadoRequestDTO;
 import com.cloud.jml.exception.empleado.EmpleadoDeletionException;
@@ -24,9 +24,20 @@ public class EmpleadoUtils {
         log.info("🔥 EmpleadoUtils inicializado correctamente.");
     }
 
-    /**
-     * 💾 Guarda la orden en BD con manejo de excepciones.
-     */
+    public EmpleadoEntity validarExistenciaEmpleado(EmpleadoRequestDTO empleadoRequestDTO) {
+        log.info("🔍 [SOLICITUD] Validando existencia de empleado: {} con identificación: {}", empleadoRequestDTO.getNombres(), empleadoRequestDTO.getIdentificacion());
+        Optional<EmpleadoEntity> optionalEmpleado = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion());
+
+        if (optionalEmpleado.isPresent()) {
+            EmpleadoEntity empleadoEntity = optionalEmpleado.get();
+            log.info("✅ [FINALIZADO] Empleado encontrado con identificación: {}", empleadoEntity.getIdentificacion());
+            return empleadoEntity;
+        } else {
+            log.warn("⚠️ [RESULTADO] Empleado no encontrado con identificación: {}", empleadoRequestDTO.getIdentificacion());
+            throw new EmpleadoNoEncontradoException(empleadoRequestDTO.getIdentificacion());
+        }
+    }
+
     public EmpleadoEntity guardarEmpleadoBD(EmpleadoEntity empleadoEntity) {
         try {
             return empleadoRepository.save(empleadoEntity);
@@ -45,9 +56,6 @@ public class EmpleadoUtils {
         }
     }
 
-    /**
-     * 🗑️ Elimina la orden de BD con manejo de excepciones.
-     */
     public void eliminarEmpleadoBD(EmpleadoEntity empleadoEntity) {
         try {
             empleadoRepository.delete(empleadoEntity);
@@ -63,23 +71,6 @@ public class EmpleadoUtils {
         } catch (Exception e) {
             log.error("🚨 Error inesperado al eliminar el empleado: {}", e.getMessage(), e);
             throw new EmpleadoDeletionException("Error inesperado al eliminar el empleado", e);
-        }
-    }
-
-    /**
-     * 🔍 Valida la existencia de un empleado en BD.
-     */
-    public EmpleadoEntity validarExistenciaEmpleado(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [SOLICITUD] Validando existencia de empleado: {} con identificación: {}", empleadoRequestDTO.getNombres(), empleadoRequestDTO.getIdentificacion());
-        Optional<EmpleadoEntity> optionalEmpleado = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion());
-
-        if (optionalEmpleado.isPresent()) {
-            EmpleadoEntity empleadoEntity = optionalEmpleado.get();
-            log.info("✅ [FINALIZADO] Empleado encontrado con identificación: {}", empleadoEntity.getIdentificacion());
-            return empleadoEntity;
-        } else {
-            log.warn("⚠️ [RESULTADO] Empleado no encontrado con identificación: {}", empleadoRequestDTO.getIdentificacion());
-            throw new EmpleadoNoEncontradoException(empleadoRequestDTO.getIdentificacion());
         }
     }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/empleados")
-@CrossOrigin(origins = "http://localhost:8080")
 public class EmpleadoController {
 
     private final EmpleadoService empleadoService;
@@ -46,12 +45,17 @@ public class EmpleadoController {
 
     @GetMapping("/identificacion")
     public ResponseEntity<EmpleadoResponseDTO> obtenerEmpleadoPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
-        log.info("🔍 [SOLICITUD] Buscar empleado por identificación: {}", identificacion);
+        log.info("📥 [SOLICITUD] Buscar empleado por identificación: {}", identificacion);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setIdentificacion(identificacion);
 
         EmpleadoResponseDTO empleadoIdentificacion = empleadoService.obtenerEmpleadoPorIdentificacion(empleadoRequestDTO);
+
+        if (empleadoIdentificacion == null) {
+            log.warn("📤 [RESPUESTA] Empleado no encontrado con identificación: {}", identificacion);
+            return ResponseEntity.ok().body(null);
+        }
 
         log.info("📤 [RESPUESTA] Empleado encontrado con identificación: {}", empleadoIdentificacion.getIdentificacion());
 
@@ -60,7 +64,7 @@ public class EmpleadoController {
 
     @GetMapping("/nombres")
     public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorNombres(@RequestParam("nombres") String nombres) {
-        log.info("🔍 [SOLICITUD] Buscar empleado por nombre: {}", nombres);
+        log.info("📥 [SOLICITUD] Buscar empleado por nombre: {}", nombres);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setNombres(nombres);
@@ -74,7 +78,7 @@ public class EmpleadoController {
 
     @GetMapping("/apellidos")
     public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorApellidos(@RequestParam("apellidos") String apellidos) {
-        log.info("🔍 [SOLICITUD] Buscar empleado por apellido: {}", apellidos);
+        log.info("📥 [SOLICITUD] Buscar empleado por apellido: {}", apellidos);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setApellidos(apellidos);

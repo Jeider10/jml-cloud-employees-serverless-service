@@ -6,8 +6,8 @@ import com.cloud.jml.exception.empleado.EmpleadoDuplicadoException;
 import com.cloud.jml.exception.empleado.EmpleadoNoEncontradoException;
 import com.cloud.jml.model.EmpleadoEntity;
 import com.cloud.jml.repository.EmpleadoRepository;
-import com.cloud.jml.utils.EmpleadoMapper;
-import com.cloud.jml.utils.EmpleadoUtils;
+import com.cloud.jml.utils.empleado.EmpleadoMapper;
+import com.cloud.jml.utils.empleado.EmpleadoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +73,7 @@ public class EmpleadoService {
         EmpleadoEntity empleadoEntity = mapper.mapRequestDtoToEntity(empleadoRequestDTO);
         log.info("📦 [MAPEO] Empleado: {} mapeado a entidad con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
 
-        EmpleadoEntity guardarEmpleado = empleadoRepository.save(empleadoEntity);
+        EmpleadoEntity guardarEmpleado = empleadoUtils.guardarEmpleadoBD(empleadoEntity);
         log.info("💾 [PERSISTENCIA] Empleado: {} guardado exitosamente con identificación: {}", guardarEmpleado.getNombres(), guardarEmpleado.getIdentificacion());
 
         log.info("📦 [MAPEO] Transformando entidad de producto a DTO. (crearEmpleado)");
@@ -177,7 +177,7 @@ public class EmpleadoService {
         mapper.actualizarDatosEmpleadoExistente(empleadoRequestDTO, empleadoEntity);
 
         // Paso 3: Guardar cambios en la BD
-        EmpleadoEntity actualizado = empleadoRepository.save(empleadoEntity);
+        EmpleadoEntity actualizado = empleadoUtils.guardarEmpleadoBD(empleadoEntity);
         log.info("💾 [PERSISTENCIA] Empleado actualizado: {} con identificación: {}", actualizado.getNombres(), actualizado.getIdentificacion());
 
         // Paso 4: Mapear a DTO
@@ -201,7 +201,7 @@ public class EmpleadoService {
             EmpleadoEntity empleadoEntity = empleadoExistente.get();
             log.info("📦 [ENCONTRADO] Empleado localizado -> {} con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
 
-            empleadoRepository.delete(empleadoEntity);
+            empleadoUtils.eliminarEmpleadoBD(empleadoEntity);
             log.info("🗑️ [ELIMINADO] Empleado eliminado correctamente -> {} con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
         } else {
             log.warn("❌ [NO ENCONTRADO] Empleado no encontrado con identificación: {}", empleadoRequestDTO.getIdentificacion());

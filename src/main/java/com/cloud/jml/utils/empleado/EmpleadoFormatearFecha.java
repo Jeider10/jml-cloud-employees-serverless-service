@@ -1,4 +1,4 @@
-package com.cloud.jml.utils;
+package com.cloud.jml.utils.empleado;
 
 import com.cloud.jml.dto.EmpleadoResponseDTO;
 import com.cloud.jml.model.EmpleadoEntity;
@@ -15,6 +15,29 @@ public class EmpleadoFormatearFecha {
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.of("es", "CO"));
+
+    public EmpleadoFormatearFecha() {
+        log.info("🔥 EmpleadoFormatearFecha inicializado correctamente.");
+    }
+
+    public void asignarFechasFormateadas(EmpleadoEntity empleadoEntity, EmpleadoResponseDTO empleadoResponseDTO) {
+        if (empleadoEntity == null || empleadoResponseDTO == null) {
+            log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");
+            return;
+        }
+
+        log.info("📦 Asignando fechas formateadas al empleado: {}", empleadoEntity.getNombres());
+
+        // Fecha de creación
+        String fechaCreacion = formatearFecha(empleadoEntity.getFechaCreacion());
+        empleadoResponseDTO.setFechaCreacion(fechaCreacion);
+        log.debug("🕓 Fecha de creación asignada: {}", fechaCreacion);
+
+        // Fecha de actualización
+        String fechaActualizacion = formatearFecha(empleadoEntity.getFechaActualizacion());
+        empleadoResponseDTO.setFechaActualizacion(fechaActualizacion);
+        log.debug("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
+    }
 
     /**
      * 🕒 Formatea una fecha LocalDateTime al formato colombiano:
@@ -37,28 +60,5 @@ public class EmpleadoFormatearFecha {
         log.info("🕓 Fecha formateada correctamente: {}", fechaFormateada);
 
         return fechaFormateada;
-    }
-
-    /**
-     * 🧩 Asigna las fechas formateadas (creación y actualización)
-     * desde la entidad a la respuesta DTO.
-     */
-    public void asignarFechasFormateadas(EmpleadoEntity empleadoEntity, EmpleadoResponseDTO empleadoResponseDTO) {
-        if (empleadoEntity == null || empleadoResponseDTO == null) {
-            log.warn("⚠️ Entidad o DTO nulos al intentar asignar fechas formateadas.");
-            return;
-        }
-
-        log.info("📦 Asignando fechas formateadas al empleado: {}", empleadoEntity.getNombres());
-
-        // Fecha de creación
-        String fechaCreacion = formatearFecha(empleadoEntity.getFechaCreacion());
-        empleadoResponseDTO.setFechaCreacion(fechaCreacion);
-        log.debug("🕓 Fecha de creación asignada: {}", fechaCreacion);
-
-        // Fecha de actualización
-        String fechaActualizacion = formatearFecha(empleadoEntity.getFechaActualizacion());
-        empleadoResponseDTO.setFechaActualizacion(fechaActualizacion);
-        log.debug("🕓 Fecha de actualización asignada: {}", fechaActualizacion);
     }
 }
