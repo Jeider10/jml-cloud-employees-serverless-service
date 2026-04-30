@@ -3,6 +3,7 @@ package com.cloud.jml.controller;
 import com.cloud.jml.dto.EmpleadoRequestDTO;
 import com.cloud.jml.dto.EmpleadoResponseDTO;
 import com.cloud.jml.service.EmpleadoService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,31 +34,26 @@ public class EmpleadoController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
+    public ResponseEntity<EmpleadoResponseDTO> crearEmpleado(@Valid @RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
         log.info("📥 [SOLICITUD] Crear empleado: {}", empleadoRequestDTO.getNombres());
 
         EmpleadoResponseDTO response = empleadoService.crearEmpleado(empleadoRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empleado creado: {} con identificación: {}", response.getNombres(), response.getIdentificacion());
+        log.info("📤 [RESPUESTA] Empleado creado: {} con identificacion: {}", response.getNombres(), response.getIdentificacion());
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/identificacion")
     public ResponseEntity<EmpleadoResponseDTO> obtenerEmpleadoPorIdentificacion(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] Buscar empleado por identificación: {}", identificacion);
+        log.info("📥 [SOLICITUD] Buscar empleado por identificacion: {}", identificacion);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setIdentificacion(identificacion);
 
         EmpleadoResponseDTO empleadoIdentificacion = empleadoService.obtenerEmpleadoPorIdentificacion(empleadoRequestDTO);
 
-        if (empleadoIdentificacion == null) {
-            log.warn("📤 [RESPUESTA] Empleado no encontrado con identificación: {}", identificacion);
-            return ResponseEntity.ok().body(null);
-        }
-
-        log.info("📤 [RESPUESTA] Empleado encontrado con identificación: {}", empleadoIdentificacion.getIdentificacion());
+        log.info("📤 [RESPUESTA] Empleado encontrado con identificacion: {}", empleadoIdentificacion.getIdentificacion());
 
         return ResponseEntity.ok(empleadoIdentificacion);
     }
@@ -91,26 +87,26 @@ public class EmpleadoController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("📥 [SOLICITUD] Actualizar empleado con identificación: {}", empleadoRequestDTO.getIdentificacion());
+    public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@Valid @RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
+        log.info("📥 [SOLICITUD] Actualizar empleado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
 
         EmpleadoResponseDTO empleadoResponseDTO = empleadoService.actualizarEmpleado(empleadoRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empleado actualizado correctamente: {} con identificación: {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
+        log.info("📤 [RESPUESTA] Empleado actualizado correctamente: {} con identificacion: {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
 
         return ResponseEntity.ok(empleadoResponseDTO);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> eliminarEmpleado(@RequestParam("identificacion") Long identificacion) {
-        log.info("📥 [SOLICITUD] Eliminar empleado con identificación: {}", identificacion);
+        log.info("📥 [SOLICITUD] Eliminar empleado con identificacion: {}", identificacion);
 
         EmpleadoRequestDTO empleadoRequestDTO = new EmpleadoRequestDTO();
         empleadoRequestDTO.setIdentificacion(identificacion);
 
         empleadoService.eliminarEmpleado(empleadoRequestDTO);
 
-        log.info("📤 [RESPUESTA] Empleado eliminado correctamente con identificación: {}", identificacion);
+        log.info("📤 [RESPUESTA] Empleado eliminado correctamente con identificacion: {}", identificacion);
 
         return ResponseEntity.ok().build();
     }

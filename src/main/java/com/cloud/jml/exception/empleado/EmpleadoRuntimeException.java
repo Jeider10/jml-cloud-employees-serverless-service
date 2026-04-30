@@ -4,12 +4,17 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class EmpleadoRuntimeException extends RuntimeException {
+public abstract class EmpleadoRuntimeException extends RuntimeException {
 
     private final HttpStatus status;
 
-    public EmpleadoRuntimeException(HttpStatus status, String message) {
+    protected EmpleadoRuntimeException(HttpStatus status, String message) {
         super(message);
+        this.status = status;
+    }
+
+    protected EmpleadoRuntimeException(HttpStatus status, String message, Throwable cause) {
+        super(message, cause);
         this.status = status;
     }
 }

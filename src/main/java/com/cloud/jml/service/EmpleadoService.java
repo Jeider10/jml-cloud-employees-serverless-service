@@ -60,7 +60,7 @@ public class EmpleadoService {
 
     @Transactional
     public EmpleadoResponseDTO crearEmpleado(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de creación de empleado: {}", empleadoRequestDTO.getNombres());
+        log.info("🔍 [CONSULTA] Inicio de creacion de empleado: {}", empleadoRequestDTO.getNombres());
 
         Optional<EmpleadoEntity> empleadoExistente = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion());
 
@@ -71,48 +71,46 @@ public class EmpleadoService {
 
         log.info("📦 [MAPEO] Transformando DTO a entidad de empleado");
         EmpleadoEntity empleadoEntity = mapper.mapRequestDtoToEntity(empleadoRequestDTO);
-        log.info("📦 [MAPEO] Empleado: {} mapeado a entidad con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
+        log.info("📦 [MAPEO] Empleado: {} mapeado a entidad con identificacion: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
 
         EmpleadoEntity guardarEmpleado = empleadoUtils.guardarEmpleadoBD(empleadoEntity);
-        log.info("💾 [PERSISTENCIA] Empleado: {} guardado exitosamente con identificación: {}", guardarEmpleado.getNombres(), guardarEmpleado.getIdentificacion());
+        log.info("💾 [PERSISTENCIA] Empleado: {} guardado exitosamente con identificacion: {}", guardarEmpleado.getNombres(), guardarEmpleado.getIdentificacion());
 
         log.info("📦 [MAPEO] Transformando entidad de producto a DTO. (crearEmpleado)");
         EmpleadoResponseDTO empleadoResponseDTO = mapper.mapEntityToResponseDto(guardarEmpleado);
-        log.info("📦 [MAPEO] Empleado mapeado a DTO. nombres: {}, apellidos: {}, identificación: {}",
+        log.info("📦 [MAPEO] Empleado mapeado a DTO. nombres: {}, apellidos: {}, identificacion: {}",
                 empleadoResponseDTO.getNombres(), empleadoResponseDTO.getApellidos(), empleadoResponseDTO.getIdentificacion());
 
-        log.info("✅ [FINALIZADO] Empleado creado correctamente: {} con identificación {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
+        log.info("✅ [FINALIZADO] Empleado creado correctamente: {} con identificacion {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
 
         return empleadoResponseDTO;
     }
 
     @Transactional(readOnly = true)
     public EmpleadoResponseDTO obtenerEmpleadoPorIdentificacion(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Iniciando búsqueda de empleado por identificación: {}", empleadoRequestDTO.getIdentificacion());
+        log.info("🔍 [CONSULTA] Iniciando busqueda de empleado por identificacion: {}", empleadoRequestDTO.getIdentificacion());
 
-        Optional<EmpleadoEntity> optionalEmpleado = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion());
+        EmpleadoEntity empleadoEntity = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion())
+                .orElseThrow(() -> {
+                    log.warn("❌ [RESULTADO] Empleado no encontrado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
+                    return new EmpleadoNoEncontradoException(empleadoRequestDTO.getIdentificacion());
+                });
 
-        if (optionalEmpleado.isEmpty()) {
-            log.warn("❌ [RESULTADO] Empleado no encontrado con identificación: {}", empleadoRequestDTO.getIdentificacion());
-            return null;
-        }
-
-        EmpleadoEntity empleadoEntity = optionalEmpleado.get();
-        log.info("📦 [ENCONTRADO] Empleado encontrado -> nombres: {}, apellidos: {}, identificación: {}",
+        log.info("📦 [ENCONTRADO] Empleado encontrado -> nombres: {}, apellidos: {}, identificacion: {}",
                 empleadoEntity.getNombres(), empleadoEntity.getApellidos(), empleadoEntity.getIdentificacion());
 
         log.info("📦 [MAPEO] Transformando entidad de empleado a DTO. (obtenerEmpleadoPorIdentificacion)");
         EmpleadoResponseDTO empleadoResponseDTO = mapper.mapEntityToResponseDto(empleadoEntity);
-        log.info("📦 [MAPEO] Empleado mapeado a DTO. identificación: {}", empleadoResponseDTO.getIdentificacion());
+        log.info("📦 [MAPEO] Empleado mapeado a DTO. identificacion: {}", empleadoResponseDTO.getIdentificacion());
 
-        log.info("✅ [FINALIZADO] Empleado encontrado con identificación: {}", empleadoResponseDTO.getIdentificacion());
+        log.info("✅ [FINALIZADO] Empleado encontrado con identificacion: {}", empleadoResponseDTO.getIdentificacion());
 
         return empleadoResponseDTO;
     }
 
     @Transactional(readOnly = true)
     public List<EmpleadoResponseDTO> obtenerEmpleadoPorNombres(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Iniciando búsqueda de empleados por nombre: {}", empleadoRequestDTO.getNombres());
+        log.info("🔍 [CONSULTA] Iniciando busqueda de empleados por nombre: {}", empleadoRequestDTO.getNombres());
 
         List<EmpleadoEntity> empleadoEntity = empleadoRepository.findByNombresContainingIgnoreCase(empleadoRequestDTO.getNombres());
 
@@ -139,11 +137,11 @@ public class EmpleadoService {
 
     @Transactional(readOnly = true)
     public List<EmpleadoResponseDTO> obtenerEmpleadoPorApellidos(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Iniciando búsqueda de empleado por apellido: {}", empleadoRequestDTO.getApellidos());
+        log.info("🔍 [CONSULTA] Iniciando busqueda de empleado por apellido: {}", empleadoRequestDTO.getApellidos());
 
         List<EmpleadoEntity> empleadoEntity = empleadoRepository.findByApellidosContainingIgnoreCase(empleadoRequestDTO.getApellidos());
 
-        // Paso 2: Validar si está vacío
+        // Paso 2: Validar si esta vacio
         if (empleadoEntity.isEmpty()) {
             log.warn("❌ [RESULTADO] No se encontraron empleados con apellido: {}", empleadoRequestDTO.getApellidos());
             return List.of();
@@ -167,7 +165,7 @@ public class EmpleadoService {
 
     @Transactional
     public EmpleadoResponseDTO actualizarEmpleado(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de actualización de empleado: {} con identificación: {}",
+        log.info("🔍 [CONSULTA] Inicio de actualizacion de empleado: {} con identificacion: {}",
                 empleadoRequestDTO.getNombres(), empleadoRequestDTO.getIdentificacion());
 
         // Paso 1: Validar existencia
@@ -178,33 +176,33 @@ public class EmpleadoService {
 
         // Paso 3: Guardar cambios en la BD
         EmpleadoEntity actualizado = empleadoUtils.guardarEmpleadoBD(empleadoEntity);
-        log.info("💾 [PERSISTENCIA] Empleado actualizado: {} con identificación: {}", actualizado.getNombres(), actualizado.getIdentificacion());
+        log.info("💾 [PERSISTENCIA] Empleado actualizado: {} con identificacion: {}", actualizado.getNombres(), actualizado.getIdentificacion());
 
         // Paso 4: Mapear a DTO
         log.info("📦 [MAPEO] Transformando entidad de empleado a DTO. (actualizarEmpleado)");
         EmpleadoResponseDTO empleadoResponseDTO = mapper.mapEntityToResponseDto(actualizado);
-        log.info("📦 [MAPEO] Empleado mapeado a DTO. identificación: {}, nombres: {}",
+        log.info("📦 [MAPEO] Empleado mapeado a DTO. identificacion: {}, nombres: {}",
                 empleadoResponseDTO.getIdentificacion(), empleadoResponseDTO.getNombres());
 
-        log.info("✅ [FINALIZADO] Actualización de empleado completada: {} con identificación: {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
+        log.info("✅ [FINALIZADO] Actualizacion de empleado completada: {} con identificacion: {}", empleadoResponseDTO.getNombres(), empleadoResponseDTO.getIdentificacion());
 
         return empleadoResponseDTO;
     }
 
     @Transactional
     public void eliminarEmpleado(EmpleadoRequestDTO empleadoRequestDTO) {
-        log.info("🔍 [CONSULTA] Inicio de eliminación de empleado con identificación: {}", empleadoRequestDTO.getIdentificacion());
+        log.info("🔍 [CONSULTA] Inicio de eliminacion de empleado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
 
         Optional<EmpleadoEntity> empleadoExistente = empleadoRepository.findByIdentificacion(empleadoRequestDTO.getIdentificacion());
 
         if (empleadoExistente.isPresent()) {
             EmpleadoEntity empleadoEntity = empleadoExistente.get();
-            log.info("📦 [ENCONTRADO] Empleado localizado -> {} con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
+            log.info("📦 [ENCONTRADO] Empleado localizado -> {} con identificacion: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
 
             empleadoUtils.eliminarEmpleadoBD(empleadoEntity);
-            log.info("🗑️ [ELIMINADO] Empleado eliminado correctamente -> {} con identificación: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
+            log.info("🗑️ [ELIMINADO] Empleado eliminado correctamente -> {} con identificacion: {}", empleadoEntity.getNombres(), empleadoEntity.getIdentificacion());
         } else {
-            log.warn("❌ [NO ENCONTRADO] Empleado no encontrado con identificación: {}", empleadoRequestDTO.getIdentificacion());
+            log.warn("❌ [NO ENCONTRADO] Empleado no encontrado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
             throw new EmpleadoNoEncontradoException(empleadoRequestDTO.getIdentificacion());
         }
     }

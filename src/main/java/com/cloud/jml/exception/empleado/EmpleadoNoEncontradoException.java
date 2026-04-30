@@ -7,6 +7,6 @@ public class EmpleadoNoEncontradoException extends EmpleadoRuntimeException {
     public EmpleadoNoEncontradoException(Long identificacion) {
         super(
                 HttpStatus.NOT_FOUND,
-                "❌ [CONSULTA] Empleado no encontrado con identificación: " + identificacion);
+                "❌ [CONSULTA] Empleado no encontrado con identificacion: " + identificacion);
     }
 }

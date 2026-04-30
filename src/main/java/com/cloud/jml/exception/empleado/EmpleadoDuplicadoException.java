@@ -7,6 +7,6 @@ public class EmpleadoDuplicadoException extends EmpleadoRuntimeException {
     public EmpleadoDuplicadoException(Long identificacion) {
         super(
                 HttpStatus.CONFLICT,
-                "⚠️ [DUPLICADO] Empleado duplicado detectado con identificación: " + identificacion);
+                "⚠️ [DUPLICADO] Empleado duplicado detectado con identificacion: " + identificacion);
     }
 }

@@ -16,15 +16,15 @@ public class EmpleadoPersistenceException extends EmpleadoRuntimeException {
         );
     }
 
-    // 🔒 Violación de integridad (constraint, duplicado, etc.) al guardar
+    // 🔒 Violacion de integridad (constraint, duplicado, etc.) al guardar
     public static EmpleadoPersistenceException integrityViolation(Throwable cause) {
         return new EmpleadoPersistenceException(
-                "❌ [INTEGRIDAD] Violación de integridad en base de datos al guardar el empleado",
+                "❌ [INTEGRIDAD] Violacion de integridad en base de datos al guardar el empleado",
                 cause
         );
     }
 
-    // ⚙️ Error técnico de acceso a datos
+    // ⚙️ Error tecnico de acceso a datos
     public static EmpleadoPersistenceException dataAccessError(Throwable cause) {
         return new EmpleadoPersistenceException(
                 "❌ [DATOS] Error de acceso a datos al intentar guardar el empleado",
@@ -35,7 +35,7 @@ public class EmpleadoPersistenceException extends EmpleadoRuntimeException {
     // 💥 Error inesperado
     public static EmpleadoPersistenceException unexpected(Throwable cause) {
         return new EmpleadoPersistenceException(
-                "💥 [INESPERADO] Ocurrió un error inesperado al registrar el empleado",
+                "💥 [INESPERADO] Ocurrio un error inesperado al registrar el empleado",
                 cause
         );
     }

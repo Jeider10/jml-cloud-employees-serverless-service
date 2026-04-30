@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component // 🔹 Anotación para indicar que es un componente de Spring
+@Component // 🔹 Anotacion para indicar que es un componente de Spring
 public class EmpleadoMapper {
 
     private final EmpleadoFormatearFecha empleadoFormatearFecha;
@@ -56,7 +56,7 @@ public class EmpleadoMapper {
     }
 
     public void actualizarDatosEmpleadoExistente(EmpleadoRequestDTO empleadoRequestDTO, EmpleadoEntity empleadoEntity) {
-        log.info("✏️ [SOLICITUD] Actualizando datos del empleado con identificación: {}", empleadoEntity.getIdentificacion());
+        log.info("✏️ [SOLICITUD] Actualizando datos del empleado con identificacion: {}", empleadoEntity.getIdentificacion());
 
         // Actualizamos solo los campos permitidos
         empleadoEntity.setIdentificacion(empleadoRequestDTO.getIdentificacion());
@@ -65,9 +65,9 @@ public class EmpleadoMapper {
         empleadoEntity.setTelefono(empleadoRequestDTO.getTelefono());
         empleadoEntity.setDireccion(empleadoRequestDTO.getDireccion());
 
-        // Actualizamos la fecha de actualización
+        // Actualizamos la fecha de actualizacion
         empleadoEntity.setFechaActualizacion(LocalDateTime.now());
 
-        log.info("✅ [FINALIZADO] Empleado actualizado correctamente: identificación={}", empleadoEntity.getIdentificacion());
+        log.info("✅ [FINALIZADO] Empleado actualizado correctamente: identificacion={}", empleadoEntity.getIdentificacion());
     }
 }
