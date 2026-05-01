@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -159,6 +160,31 @@ public class EmpleadoService {
         List<EmpleadoResponseDTO> empleadoResponse = streamDto.toList();
 
         log.info("✅ [FINALIZADO] Empleados encontrados con apellido: {}. Total encontrados: {}", empleadoRequestDTO.getApellidos(), empleadoResponse.size());
+
+        return empleadoResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmpleadoResponseDTO> obtenerEmpleadoPorFechaCreacion(String fechaInicio, String fechaFin) {
+        log.info("🔍 [CONSULTA] Iniciando busqueda de empleados por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        LocalDateTime inicio = empleadoUtils.parsearFechaInicio(fechaInicio);
+        LocalDateTime fin = empleadoUtils.parsearFechaFin(fechaFin);
+
+        log.info("📅 [RANGO] Buscando empleados entre {} y {}", inicio, fin);
+
+        List<EmpleadoEntity> empleadoEntity = empleadoRepository.findByFechaCreacionBetween(inicio, fin);
+
+        if (empleadoEntity.isEmpty()) {
+            log.warn("❌ [RESULTADO] No se encontraron empleados en el rango de fechas: {} - {}", inicio, fin);
+            return List.of();
+        }
+
+        List<EmpleadoResponseDTO> empleadoResponse = empleadoEntity.stream()
+                .map(mapper::mapEntityToResponseDto)
+                .toList();
+
+        log.info("✅ [FINALIZADO] Empleados encontrados en rango de fechas. Total: {}", empleadoResponse.size());
 
         return empleadoResponse;
     }

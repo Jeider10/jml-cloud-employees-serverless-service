@@ -86,6 +86,25 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadosApellidos);
     }
 
+    @GetMapping("/fechaCreacion")
+    public ResponseEntity<List<EmpleadoResponseDTO>> obtenerEmpleadoPorFechaCreacion(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
+
+        log.info("📥 [SOLICITUD] Buscar empleados por rango de fecha de creacion: {} - {}", fechaInicio, fechaFin);
+
+        List<EmpleadoResponseDTO> empleadosFecha = empleadoService.obtenerEmpleadoPorFechaCreacion(fechaInicio, fechaFin);
+
+        if (empleadosFecha == null || empleadosFecha.isEmpty()) {
+            log.warn("⚠️ [RESPUESTA] No se encontraron empleados en el rango de fechas.");
+            return ResponseEntity.noContent().build();
+        }
+
+        log.info("📤 [RESPUESTA] Se retornan {} empleados en el rango de fechas.", empleadosFecha.size());
+
+        return ResponseEntity.ok(empleadosFecha);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<EmpleadoResponseDTO> actualizarEmpleado(@Valid @RequestBody EmpleadoRequestDTO empleadoRequestDTO) {
         log.info("📥 [SOLICITUD] Actualizar empleado con identificacion: {}", empleadoRequestDTO.getIdentificacion());
